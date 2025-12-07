@@ -23,6 +23,7 @@ const startApp = async () => {
         if (code === 'space' || code === 'keye') State.actionPressed = isPressed;
     };
     
+    // Herramienta Tecla P
     window.addEventListener('keydown', (e) => {
         handleInput(e, true);
         if (e.code === 'KeyP') {
@@ -47,12 +48,12 @@ const startApp = async () => {
 
         const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
 
-        // --- 💡 DETECCIÓN DE SUELO (RAYCAST) ---
-        // Lanzamos un rayo invisible desde el centro del jugador hacia abajo (0, -1, 0)
-        // Longitud 0.6 (porque el personaje mide 1.0, el centro es 0.5, así que 0.6 toca el suelo)
+        // --- 💡 DETECCIÓN DE SUELO (FRENO DE MONTAÑA) ---
+        // Lanzamos un rayo hacia abajo para ver si estamos tocando piso
+        // Longitud 0.6 porque el personaje mide 1.0 de alto (el centro es 0.5)
         const ray = new BABYLON.Ray(State.playerMesh.position, new BABYLON.Vector3(0, -1, 0), 0.6);
-        const groundHit = scene.pickWithRay(ray, (mesh) => mesh.checkCollisions);
-        const isGrounded = groundHit.hit; // true si estamos tocando piso
+        const pick = scene.pickWithRay(ray, (mesh) => mesh.checkCollisions);
+        const isGrounded = pick.hit; 
 
         // 1. MECÁNICAS
         if (!State.carriedChest) {
@@ -66,15 +67,25 @@ const startApp = async () => {
             if (nearest) {
                 toggleActionPrompt(true, "E: Recoger");
                 if (State.actionPressed) {
+                    // --- ANIMACIÓN DE RECOGER (Lo que te gustó) ---
                     nearest.checkCollisions = false;
                     nearest.rotationQuaternion = null; 
-                    nearest.parent = State.visualMesh;
-                    nearest.position = new BABYLON.Vector3(0, 3.5, 0); 
+
+                    nearest.setParent(State.visualMesh); 
+                    const targetPos = new BABYLON.Vector3(0, 0.7, 0.6); // En las manos
+                    
+                    BABYLON.Animation.CreateAndStartAnimation(
+                        "pickupAnim", nearest, "position", 60, 20, 
+                        nearest.position, targetPos, 
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                    );
+
                     nearest.rotation = new BABYLON.Vector3(0, 0, 0);
-                    nearest.scaling = new BABYLON.Vector3(2, 2, 2);
+                    nearest.scaling = new BABYLON.Vector3(1.5, 1.5, 1.5);
+
                     State.carriedChest = nearest;
                     State.actionPressed = false; 
-                    showTemporaryMessage("¡Al barco!");
+                    showTemporaryMessage("¡Lo tienes!");
                 }
             } else {
                 toggleActionPrompt(false);
@@ -83,12 +94,18 @@ const startApp = async () => {
             if (State.playerMesh.position.subtract(State.shipZone.position).length() < CONFIG.deliverRange) {
                 toggleActionPrompt(true, "E: Entregar");
                 if (State.actionPressed) {
-                    State.carriedChest.parent = null; 
+                    State.carriedChest.setParent(null); 
                     const dropPos = State.shipZone.position.clone();
                     dropPos.x += (Math.random() - 0.5) * 1.5;
                     dropPos.z += (Math.random() - 0.5) * 1.5;
                     dropPos.y = -0.136; 
-                    State.carriedChest.position = dropPos;
+
+                    BABYLON.Animation.CreateAndStartAnimation(
+                        "dropAnim", State.carriedChest, "position", 60, 15, 
+                        State.carriedChest.position, dropPos, 
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                    );
+                    
                     State.carriedChest.scaling = new BABYLON.Vector3(1, 1, 1);
                     State.carriedChest.rotation = new BABYLON.Vector3(0, Math.random() * Math.PI, 0);
                     State.carriedChest.metadata.isCollectible = false;
@@ -130,12 +147,12 @@ const startApp = async () => {
                 State.visualMesh.rotation.y = BABYLON.Scalar.Lerp(currentAngle, targetAngle, 0.2);
             }
         } else {
-            // --- 💡 ARREGLO DE RESBALONES (FRENO DE MANO) ---
+            // --- 💡 LÓGICA DE FRENO RESTAURADA ---
             if (isGrounded) {
-                // Si estás en el suelo y NO tocas teclas: NO TE MUEVAS.
-                // Esto evita que la gravedad te deslice por las montañas.
+                // Si tocamos suelo y no hay teclas: NO APLICAR GRAVEDAD. 
+                // Esto te deja "pegado" a la montaña.
             } else {
-                // Si estás en el aire, aplica gravedad para caer.
+                // Si estamos en el aire, caer.
                 State.playerMesh.moveWithCollisions(new BABYLON.Vector3(0, gravity, 0));
             }
         }

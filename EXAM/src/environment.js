@@ -78,6 +78,14 @@ export function initializeGameAssets(scene) {
 
     // Ahora sí, reseteamos la memoria (array vacío)
     State.reset();
+// --- 💡 NUEVO MATERIAL VISUAL PARA EL COFRE ---
+    // Creamos el material una sola vez antes del bucle
+    const chestMat = new BABYLON.StandardMaterial("chestMat", scene);
+    // Usamos una textura de caja de madera de los ejemplos de Babylon
+    chestMat.diffuseTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/crate.png", scene);
+    // Hacemos que no brille tanto (madera mate)
+    chestMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+
 
     // --- CREACIÓN ---
     // Crear Cofres

@@ -5,7 +5,6 @@
     <title>Pirata y Tesoro</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* [CSS Anterior (Estilos de fondo y botón) Mantenido] */
         html, body {
             overflow: hidden;
             width: 100%;
@@ -21,167 +20,81 @@
             touch-action: none;
             outline: none;
         }
-        
         #uiLayer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-            /* 💡 Usamos Flexbox para centrar el mensaje principal */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
         }
-
-        /* Pantalla de Inicio / Victoria */
+        /* Pantallas */
         #startScreen {
             background: radial-gradient(circle at 20% 10%, rgba(0,0,0,0.65), rgba(0,0,0,0.85));
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            pointer-events: auto;
-            z-index: 20;
-            gap: 18px;
-            padding: 40px;
-            box-sizing: border-box;
+            width: 100%; height: 100%; position: absolute;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            pointer-events: auto; z-index: 20; gap: 18px; padding: 40px; box-sizing: border-box;
         }
-
         #startScreen h1 {
-            color: #ffd97a; 
-            font-size: 42px;
-            font-family: 'Press Start 2P', monospace;
-            text-shadow: 3px 3px 0 #3e2b1f;
-            margin: 0;
-            letter-spacing: 2px;
+            color: #ffd97a; font-size: 42px; font-family: 'Press Start 2P', monospace;
+            text-shadow: 3px 3px 0 #3e2b1f; margin: 0; letter-spacing: 2px; text-align: center;
         }
-
         #startScreen p {
-            color: #e8e8e8;
-            font-size: 16px;
-            margin: 0;
-            opacity: 0.95;
-            text-align: center;
-            max-width: 720px;
+            color: #e8e8e8; font-size: 16px; margin: 0; opacity: 0.95; text-align: center; max-width: 720px;
         }
-
         #playButton {
-            padding: 14px 34px;
-            font-size: 18px;
-            background-color: #ffd54a; 
-            border: 3px solid #3e2723; 
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 900;
-            color: #3e2723; 
-            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
-            transition: transform 0.08s ease, box-shadow 0.08s ease;
-            font-family: 'Nunito', sans-serif;
+            padding: 14px 34px; font-size: 18px; background-color: #ffd54a; 
+            border: 3px solid #3e2723; border-radius: 10px; cursor: pointer;
+            font-weight: 900; color: #3e2723; box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+            transition: transform 0.08s ease, box-shadow 0.08s ease; font-family: 'Nunito', sans-serif;
         }
-
         #playButton:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        #playButton:active { transform: translateY(4px); box-shadow: 0 0 0; }
 
-        #playButton:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0;
-        }
-
-        /* MENSAJE CENTRAL (Posicionado arriba, no centrado en pantalla) */
+        /* HUD elements */
         #gameMessage {
-            position: absolute;
-            top: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 30px;
-            border-radius: 5px;
-            color: #ffeb3b; 
-            font-size: 32px;
-            font-weight: bold;
-            text-shadow: 1px 1px 3px #000;
-            display: none; 
-            transition: opacity 0.5s;
+            position: absolute; top: 20px;
+            background: rgba(0, 0, 0, 0.7); padding: 15px 30px; border-radius: 5px;
+            color: #ffeb3b; font-size: 32px; font-weight: bold;
+            text-shadow: 1px 1px 3px #000; display: none; transition: opacity 0.5s;
         }
-        /* HUD contador (arriba derecha) */
         #hudCounter {
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 16px;
-            pointer-events: none;
-            z-index: 21;
-            font-weight: bold;
+            position: absolute; top: 18px; right: 18px;
+            background: rgba(0,0,0,0.6); color: #fff; padding: 8px 12px;
+            border-radius: 6px; font-size: 16px; pointer-events: none; z-index: 21; font-weight: bold;
         }
-
-        /* Prompt de acción (centro inferior) */
         #actionPrompt {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 18px;
-            pointer-events: none;
-            z-index: 21;
-            display: none;
+            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7); color: #fff; padding: 10px 18px;
+            border-radius: 6px; font-size: 18px; pointer-events: none; z-index: 21; display: none;
         }
-        
-        /* INSTRUCCIONES DE CONTROL (Abajo Derecha) */
         #controlsHelp {
-            position: absolute;
-            bottom: 18px;
-            right: 18px;
-            background: rgba(255,255,255,0.9);
-            padding: 10px 14px;
-            border-radius: 8px;
-            color: #000;
-            font-size: 16px;
-            pointer-events: none;
-            z-index: 22;
-            font-weight: 800;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: absolute; bottom: 18px; right: 18px;
+            background: rgba(255,255,255,0.9); padding: 10px 14px;
+            border-radius: 8px; color: #000; font-size: 16px; pointer-events: none; z-index: 22;
+            font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-
-        #controlsHelp .key { display: inline-block; background: #f5f5f5; padding: 6px 10px; border-radius: 6px; margin-right: 8px; font-family: 'Press Start 2P', monospace; }
-        #controlsHelp .line { margin-bottom: 6px; }
-
+        .key { display: inline-block; background: #f5f5f5; padding: 6px 10px; border-radius: 6px; margin-right: 8px; font-family: 'Press Start 2P', monospace; }
+        .line { margin-bottom: 6px; }
     </style>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 </head>
 <body>
     <canvas id="renderCanvas"></canvas>
-
     <div id="uiLayer">
-        
         <div id="gameMessage"></div>
-
-        <div id="hudCounter">Tesoros: 0/5</div>
+        <div id="hudCounter">Tesoros: 0/3</div>
         <div id="actionPrompt">Presiona E / Espacio</div>
 
         <div id="startScreen">
             <h1>PIRATA Y TESORO</h1>
-            <p>Usa <strong>WASD</strong> para moverte. Presiona <strong>E</strong> o <strong>Espacio</strong> para recoger y soltar cofres.<br>Recoge los 5 tesoros y llévalos al barco.</p>
+            <p>Usa <strong>WASD</strong> para moverte. Presiona <strong>E</strong> o <strong>Espacio</strong> para recoger y soltar cofres.<br>Recoge los tesoros y llévalos al barco.</p>
             <button id="playButton">¡ZARPAR!</button>
         </div>
-
         <div id="controlsHelp">
             <div class="line"><span class="key">WASD</span> - Mover</div>
-            <div class="line"><span class="key">E</span> - Recoger / Dejar (Espacio)</div>
+            <div class="line"><span class="key">E</span> - Acción</div>
         </div>
     </div>
-
-    <script src="babylonScene.js"></script>
+    <script type="module" src="./src/main.js"></script>
 </body>
 </html>

@@ -1,30 +1,56 @@
 export const State = {
+    // --- ESTADO GENERAL ---
+    // Interruptor principal: determina si el juego está corriendo o pausado.
     isGameActive: false,
-    keys: {},             // Input de teclas
-    actionPressed: false, // Input de acción (E/Espacio)
 
-    // Referencias del Juego
-    playerMesh: null,     // La caja invisible de colisión
-    visualMesh: null,     // El modelo 3D de Luffy
-    camera: null,         // Referencia a la cámara para el movimiento
+    // --- ENTRADA DEL JUGADOR (INPUTS) ---
+    // Aquí guardamos qué teclas están presionadas en este instante.
+    // keys: Es un objeto que guardará { 'w': true, 'a': false, ... }
+    keys: {},             
+    // Detecta si el jugador presionó la tecla de interacción (E o Espacio)
+    actionPressed: false, 
+
+    // --- REFERENCIAS 3D  ---
+    // Es vital distinguir entre estos dos:
+    // 1. playerMesh: Es el cilindro invisible (Hitbox). Controla la física y choques.
+    playerMesh: null,     
+    // 2. visualMesh: Es el modelo de Luffy. Solo es "dibujo", sigue al playerMesh.
+    visualMesh: null,     
     
-    // Objetos del mundo
-    chests: [],           // Array de cofres
-    shipZone: null,       // Zona de entrega
-    carriedChest: null,   // Cofre que llevas en la mano
-    chestsCollected: 0,   // Contador
+    // Guardamos la cámara para calcular hacia dónde es "adelante" al movernos.
+    camera: null,         
+    
+    // --- OBJETOS DEL MUNDO ---
+    // Lista (Array) que contiene todos los cofres creados en el mapa.
+    chests: [],           
+    // Referencia a la zona invisible del barco donde entregamos tesoros.
+    shipZone: null,       
+    
+    // Variable especial: Si es null, tienes las manos vacías. 
+    // Si tiene un objeto, es el cofre que llevas cargado.
+    carriedChest: null,   
+    
+    // El marcador de puntuación actual.
+    chestsCollected: 0,   
 
-    // Animaciones
+    // --- SISTEMA DE ANIMACIÓN ---
+    // Guardamos las referencias a las animaciones para poder darles Play/Stop
+    // desde el archivo main.js sin tener que buscarlas cada vez.
     animations: {
-        idle: null,
-        walk: null
+        idle: null, // Respirar / Quieto
+        walk: null  // Correr / Caminar
     },
 
+    // --- FUNCIÓN DE REINICIO ---
+    // Esta función limpia la memoria para empezar una partida nueva desde cero.
+    // Es crucial para que no se queden puntos o cofres "fantasma" de la partida anterior.
     reset: function() {
         this.chestsCollected = 0;
         this.carriedChest = null;
         this.actionPressed = false;
         this.chests = [];
         this.keys = {};
+      
+        // solo reseteamos la lógica del juego.
     }
 };

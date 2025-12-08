@@ -2,6 +2,8 @@ import { CONFIG } from './config.js';
 import { State } from './state.js';
 import { setupUI, updateMissionText, showTemporaryMessage, showVictory, toggleActionPrompt } from './ui.js';
 import { createScene, initializeGameAssets } from './environment.js';
+// Importamos las funciones de efectos que creamos en effects.js
+import { spawnPickupEffect, spawnDeliverEffect } from './effects.js'; 
 
 const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
@@ -9,6 +11,7 @@ const engine = new BABYLON.Engine(canvas, true);
 const startApp = async () => {
     const scene = await createScene(engine, canvas);
 
+    // Configuración de la cámara
     const camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI/2, Math.PI/3, 14, State.playerMesh.position, scene);
     camera.lockedTarget = State.playerMesh;
     camera.lowerRadiusLimit = 2; 
@@ -17,13 +20,14 @@ const startApp = async () => {
     
     State.camera = camera;
 
+    // Manejo de entrada (Teclado)
     const handleInput = (e, isPressed) => {
         const code = e.code.toLowerCase();
         State.keys[code] = isPressed; 
         if (code === 'space' || code === 'keye') State.actionPressed = isPressed;
     };
     
-    // Herramienta Tecla P
+    // Herramienta de depuración (Tecla P para ver coordenadas en consola)
     window.addEventListener('keydown', (e) => {
         handleInput(e, true);
         if (e.code === 'KeyP') {
@@ -35,6 +39,7 @@ const startApp = async () => {
     window.addEventListener('keyup', (e) => handleInput(e, false));
     window.addEventListener('blur', () => { State.keys = {}; });
 
+    // Inicialización
     initializeGameAssets(scene);
     setupUI(() => { 
         initializeGameAssets(scene); 
@@ -42,21 +47,21 @@ const startApp = async () => {
         canvas.focus();
     });
 
+    // Bucle de renderizado principal
     engine.runRenderLoop(() => {
         if (!scene.isReady() || !State.playerMesh) return;
         if (!State.isGameActive) { scene.render(); return; }
 
         const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
 
-        // --- 💡 DETECCIÓN DE SUELO (FRENO DE MONTAÑA) ---
-        // Lanzamos un rayo hacia abajo para ver si estamos tocando piso
-        // Longitud 0.6 porque el personaje mide 1.0 de alto (el centro es 0.5)
+        // Detección de suelo (Raycast) para evitar deslizarse en pendientes cuando está quieto
         const ray = new BABYLON.Ray(State.playerMesh.position, new BABYLON.Vector3(0, -1, 0), 0.6);
         const pick = scene.pickWithRay(ray, (mesh) => mesh.checkCollisions);
         const isGrounded = pick.hit; 
 
-        // 1. MECÁNICAS
+        // Lógica de interacción con cofres
         if (!State.carriedChest) {
+            // Buscar cofre más cercano
             let nearest = null;
             State.chests.forEach(c => {
                 if (c.metadata.isCollectible && !c.parent && c.position.subtract(State.playerMesh.position).length() < CONFIG.pickupRange) {
@@ -67,12 +72,15 @@ const startApp = async () => {
             if (nearest) {
                 toggleActionPrompt(true, "E: Recoger");
                 if (State.actionPressed) {
-                    // --- ANIMACIÓN DE RECOGER (Lo que te gustó) ---
+                    // Acción: Recoger cofre
                     nearest.checkCollisions = false;
                     nearest.rotationQuaternion = null; 
 
+                    // Efecto visual de partículas al recoger
+                    spawnPickupEffect(nearest.position, scene);
+
                     nearest.setParent(State.visualMesh); 
-                    const targetPos = new BABYLON.Vector3(0, 0.7, 0.6); // En las manos
+                    const targetPos = new BABYLON.Vector3(0, 0.7, 0.6); // Posición en las manos
                     
                     BABYLON.Animation.CreateAndStartAnimation(
                         "pickupAnim", nearest, "position", 60, 20, 
@@ -91,10 +99,15 @@ const startApp = async () => {
                 toggleActionPrompt(false);
             }
         } else {
+            // Lógica de entrega en el barco
             if (State.playerMesh.position.subtract(State.shipZone.position).length() < CONFIG.deliverRange) {
                 toggleActionPrompt(true, "E: Entregar");
                 if (State.actionPressed) {
                     State.carriedChest.setParent(null); 
+                    
+                    // Efecto visual de partículas al entregar
+                    spawnDeliverEffect(State.shipZone.position, scene);
+
                     const dropPos = State.shipZone.position.clone();
                     dropPos.x += (Math.random() - 0.5) * 1.5;
                     dropPos.z += (Math.random() - 0.5) * 1.5;
@@ -113,6 +126,8 @@ const startApp = async () => {
                     State.chestsCollected++;
                     updateMissionText();
                     State.actionPressed = false;
+                    
+                    // Verificar condición de victoria
                     if (State.chestsCollected >= CONFIG.totalChests) {
                         State.isGameActive = false;
                         showVictory();
@@ -123,7 +138,7 @@ const startApp = async () => {
             }
         }
 
-        // 2. MOVIMIENTO
+        // Lógica de movimiento del personaje
         const inputZ = (State.keys['keyw'] || State.keys['arrowup'] ? 1 : 0) + (State.keys['keys'] || State.keys['arrowdown'] ? -1 : 0);
         const inputX = (State.keys['keyd'] || State.keys['arrowright'] ? 1 : 0) + (State.keys['keya'] || State.keys['arrowleft'] ? -1 : 0);
         
@@ -141,22 +156,23 @@ const startApp = async () => {
 
             State.playerMesh.moveWithCollisions(new BABYLON.Vector3(moveVec.x, gravity, moveVec.z));
 
+            // Rotar el modelo visual hacia la dirección de movimiento
             if (State.visualMesh) {
                 const targetAngle = Math.atan2(moveDir.x, moveDir.z);
                 const currentAngle = State.visualMesh.rotation.y;
                 State.visualMesh.rotation.y = BABYLON.Scalar.Lerp(currentAngle, targetAngle, 0.2);
             }
         } else {
-            // --- 💡 LÓGICA DE FRENO RESTAURADA ---
+            // Sistema de freno en el suelo vs gravedad en el aire
             if (isGrounded) {
-                // Si tocamos suelo y no hay teclas: NO APLICAR GRAVEDAD. 
-                // Esto te deja "pegado" a la montaña.
+                // Si está en el suelo y no se mueve, no aplicar gravedad para evitar deslizamientos
             } else {
-                // Si estamos en el aire, caer.
+                // Si está en el aire, aplicar gravedad
                 State.playerMesh.moveWithCollisions(new BABYLON.Vector3(0, gravity, 0));
             }
         }
 
+        // Gestión de animaciones (Idle vs Walk)
         const { walk, idle } = State.animations;
         if (isMoving) {
             if (walk && !walk.isPlaying) {

@@ -12,7 +12,7 @@ const startApp = async () => {
     // Creamos el escenario y cargamos los modelos 3D antes de empezar.
     const scene = await createScene(engine, canvas);
 
-    // --- EXPLICACIÓN: CÁMARA ---
+    // ---CÁMARA ---
     // Usamos una ArcRotateCamera para la vista en tercera persona.
     // 'lockedTarget' es vital: hace que la cámara persiga automáticamente al jugador.
     const camera = new BABYLON.ArcRotateCamera("Cam", -Math.PI/2, Math.PI/3, 14, State.playerMesh.position, scene);
@@ -23,7 +23,7 @@ const startApp = async () => {
     
     State.camera = camera;
 
-    // --- EXPLICACIÓN: INPUTS (TECLADO) ---
+    // --- INPUTS (TECLADO) ---
     // Escuchamos qué teclas presiona el usuario y guardamos su estado (true/false)
     // en el objeto 'State.keys'. Esto nos permite movernos suavemente en el bucle.
     const handleInput = (e, isPressed) => {
@@ -52,7 +52,7 @@ const startApp = async () => {
         canvas.focus();
     });
 
-    // --- EXPLICACIÓN: EL BUCLE PRINCIPAL (GAME LOOP) ---
+    // --- EL BUCLE PRINCIPAL (GAME LOOP) ---
     // Esta función 'runRenderLoop' es el corazón del juego.
     // Se ejecuta 60 veces por segundo. En cada vuelta, calculamos
     // la física, la lógica y dibujamos la imagen nueva.
@@ -62,7 +62,7 @@ const startApp = async () => {
 
         const dt = Math.min(engine.getDeltaTime() / 1000, 0.05);
 
-        // --- EXPLICACIÓN: FÍSICA Y SUELO (RAYCAST) ---
+        // ---  FÍSICA Y SUELO (RAYCAST) ---
         // Lanzamos un rayo invisible desde el jugador hacia abajo (vector 0, -1, 0).
         // Si el rayo toca algo (pick.hit), sabemos que estamos "aterrizados" (isGrounded).
         // Esto sirve para desactivar la gravedad y evitar resbalones en pendientes.
@@ -70,7 +70,7 @@ const startApp = async () => {
         const pick = scene.pickWithRay(ray, (mesh) => mesh.checkCollisions);
         const isGrounded = pick.hit; 
 
-        // --- EXPLICACIÓN: MÁQUINA DE ESTADOS (LOGICA DE MISIÓN) ---
+        // ---  MÁQUINA DE ESTADOS ---
         // El juego pregunta constantemente: ¿Llevo un cofre en la mano?
         if (!State.carriedChest) {
             // CASO 1: NO LLEVO COFRE -> MODO BUSQUEDA
@@ -156,7 +156,7 @@ const startApp = async () => {
             }
         }
 
-        // --- EXPLICACIÓN: MOVIMIENTO RELATIVO A LA CÁMARA ---
+        // ---  MOVIMIENTO RELATIVO A LA CÁMARA ---
         // Calculamos los inputs X y Z.
         const inputZ = (State.keys['keyw'] || State.keys['arrowup'] ? 1 : 0) + (State.keys['keys'] || State.keys['arrowdown'] ? -1 : 0);
         const inputX = (State.keys['keyd'] || State.keys['arrowright'] ? 1 : 0) + (State.keys['keya'] || State.keys['arrowleft'] ? -1 : 0);
@@ -193,7 +193,7 @@ const startApp = async () => {
             }
         }
 
-        // --- EXPLICACIÓN: CONTROL DE ANIMACIONES ---
+        // ---  CONTROL DE ANIMACIONES ---
         // Si nos movemos -> Play Walk. Si no -> Play Idle.
         const { walk, idle } = State.animations;
         if (isMoving) {

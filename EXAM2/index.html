@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DOOM: Vertical Slice Exam</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <style>
+        /* CONFIGURACIÓN BÁSICA */
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background: #000;
+        }
+
+        /* LIENZO 3D */
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated; 
+            outline: none;
+        }
+
+        /* --- ARMA (BAJADA PARA INMERSIÓN) --- */
+        #weapon {
+            position: absolute;
+            
+            /* CAMBIO IMPORTANTE: Bajamos de 25% a 12% */
+            /* Esto esconde la base de la mano detrás de la barra */
+            bottom: 22.5%; 
+            
+            left: 54%;   
+            transform: translateX(-50%);
+            width: 40vh;
+            height: 40vh;
+            background-image: url('texturas/gun_strip.png');
+            background-repeat: no-repeat;
+            background-size: 400% 100%;
+            background-position: 0% 0%;
+            pointer-events: none;
+            z-index: 10; 
+            image-rendering: pixelated;
+        }
+
+        /* --- HUD (BARRA GIGANTE) --- */
+        #hud-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 35%; 
+            
+            background-image: url('texturas/new_hud.webp');
+            background-size: 100% 100%; 
+            background-repeat: no-repeat;
+            
+            z-index: 20; /* La barra está delante del arma */
+            
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #b30000;
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+            padding: 0; 
+        }
+
+        /* --- LA CARA ANIMADA --- */
+        #doom-face {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 15%; 
+            width: 14vh; 
+            height: 14vh; 
+            background-image: url('texturas/face.png'); 
+            background-repeat: no-repeat;
+            background-size: 200% 200%; 
+            background-position: 0% 0%; 
+            image-rendering: pixelated;
+            background-color: #000000; 
+        }
+
+        /* --- PANTALLA DE DEMO --- */
+        #demo-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #demo-screen h1 {
+            color: #ff0000;
+            font-size: 4rem;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #aa0000;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #demo-screen p {
+            color: #b30000;
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        #play-button {
+            padding: 1rem 3rem;
+            font-size: 1.3rem;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #aa0000;
+            color: #000;
+            border: 3px solid #ff0000;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        #play-button:hover {
+            background-color: #ff0000;
+            box-shadow: 0 0 40px #ff0000, inset 0 0 20px #ff0000;
+            transform: scale(1.1);
+        }
+
+        #play-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div id="demo-screen">
+        <h1>DOOM</h1>
+        <p>Bienvenido a la DEMO</p>
+        <p>Por favor presiona PLAY para iniciar</p>
+        <button id="play-button">PLAY</button>
+    </div>
+
+    <div id="weapon"></div>
+    
+    <div id="hud-container">
+        <div id="doom-face"></div>
+    </div>
+
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- Managers -->
+    <script src="managers/SceneManager.js"></script>
+    <script src="managers/CameraManager.js"></script>
+    <script src="managers/MaterialManager.js"></script>
+    <script src="managers/EnvironmentManager.js"></script>
+    <script src="managers/LightingManager.js"></script>
+    <script src="managers/EnemyManager.js"></script>
+    <script src="systems/DemoScreen.js"></script>
+    <script src="managers/ParticleManager.js"></script>
+
+    <!-- Systems -->
+    <script src="systems/GameState.js"></script>
+    <script src="systems/UIManager.js"></script>
+    <script src="systems/InputManager.js"></script>
+    <script src="systems/GameController.js"></script>
+
+    <script src="game.js"></script>
+</body>
+</html>

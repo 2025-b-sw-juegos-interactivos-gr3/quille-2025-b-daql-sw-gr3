@@ -10,10 +10,14 @@ class GameController {
         
         this.enemiesLeft = 3;
         this.isShooting = false;
+        this.backgroundMusic = null;
+        this.bulletsLeft = 5;
+        this.gunSound = null;
         
         this.setupInput();
         this.setupRenderLoop();
         this.uiManager.startFaceAnimation();
+        this.setupBackgroundMusic();
     }
 
     setupInput() {
@@ -22,7 +26,7 @@ class GameController {
 
     handleShoot() {
         if (this.isShooting) return;
-        if (this.gameStateManager.getState() === GameState.VICTORY) return;
+        if (this.bulletsLeft <= 0) return;
         
         this.isShooting = true;
         this.gameStateManager.setState(GameState.SHOOTING);
@@ -30,6 +34,15 @@ class GameController {
 
         this.uiManager.setWeaponFrame("33.33% 0%");
         this.uiManager.setFace("grin");
+
+        this.bulletsLeft--;
+        this.uiManager.updateBulletCount(this.bulletsLeft);
+        
+        // Reproducir sonido de disparo
+        if (this.gunSound) {
+            this.gunSound.currentTime = 0;
+            this.gunSound.play().catch(err => console.log("Error playing gun sound:", err));
+        }
 
         setTimeout(() => { this.uiManager.setWeaponFrame("66.66% 0%"); }, 100); 
         setTimeout(() => { this.uiManager.setWeaponFrame("100% 0%"); }, 250); 
@@ -70,7 +83,45 @@ class GameController {
         });
     }
 
+    setupBackgroundMusic() {
+        // Crear elemento de audio HTML5
+        this.backgroundMusic = new Audio();
+        this.backgroundMusic.src = "mp3/doom1.mp3";
+        this.backgroundMusic.volume = 0.05;
+        this.backgroundMusic.loop = true;
+        
+        // Log para debugging
+        this.backgroundMusic.addEventListener("canplay", () => {
+            console.log("✓ Música cargada y lista");
+        });
+        
+        this.backgroundMusic.addEventListener("error", (e) => {
+            console.error("✗ Error al cargar música:", e);
+        });
+        
+        this.backgroundMusic.addEventListener("play", () => {
+            console.log("✓ Música iniciada");
+        });
+
+        // Crear sonido de disparo
+        this.gunSound = new Audio();
+        this.gunSound.src = "mp3/gupP.mp3";
+        this.gunSound.volume = 1.0;
+    }
+
     start() {
+        // Reproducir música de fondo
+        if (this.backgroundMusic) {
+            try {
+                this.backgroundMusic.play().catch(error => {
+                    console.error("Error al reproducir:", error);
+                });
+                console.log("Intentando reproducir música...");
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+        
         this.enemyManager.spawnDefaultEnemies();
     }
 }

@@ -16,6 +16,12 @@ class UIManager {
             angry: "100% 100%"  
         };
         
+        // Crear elemento del contador de balas
+        this.bulletsDiv = document.createElement("div");
+        this.bulletsDiv.id = "bullet-counter";
+        this.bulletsDiv.textContent = "5";
+        document.body.appendChild(this.bulletsDiv);
+        
         UIManager.instance = this;
     }
 
@@ -53,6 +59,10 @@ class UIManager {
 
     setWeaponFrame(frame) {
         this.weaponDiv.style.backgroundPosition = frame;
+    }
+
+    updateBulletCount(count) {
+        this.bulletsDiv.textContent = count;
     }
 
     getWeaponDiv() {

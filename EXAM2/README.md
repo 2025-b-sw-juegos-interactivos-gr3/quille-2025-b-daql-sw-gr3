@@ -61,6 +61,10 @@ DOOMEX/
 │   ├── new_hud.webp
 │   └── face.png
 │
+├── mp3/                           (Recursos de audio)
+│   ├── doom1.mp3                 (Música de fondo)
+│   └── gupP.mp3                  (Sonido de disparo)
+│
 ├── index.html                     (Punto de entrada HTML)
 ├── game.js                        (Inicializador del juego)
 └── README.md                      (Este archivo)

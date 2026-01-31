@@ -38,7 +38,7 @@ class GameController {
         this.gunSound = null;           // Sonido del disparo
         this.gameOver = false;          // ¿Ha terminado el juego?
         
-        // Elementos del DOM
+        // Elementos 
         this.restartScreen = document.getElementById("restart-screen");  // Pantalla de game over
         this.restartButton = document.getElementById("restart-button");  // Botón para reiniciar
         
@@ -188,9 +188,12 @@ class GameController {
                     // Calcular distancia entre enemigo y jugador
                     const distance = BABYLON.Vector3.Distance(enemy.position, cameraPos);
                     
-                    // Si el enemigo está a menos de 4.5 unidades, ¡perdió!
+                    console.log(`Distancia al enemigo: ${distance.toFixed(2)}`); // Debug: mostrar distancia
+                    
+                    // Si el enemigo está a menos de 3.5 unidades, ¡perdió!
                     // (Los enemigos lo alcanzaron)
-                    if (distance < 4.5) {
+                    if (distance < 3.5) {
+                        console.log("⚠️ Enemigo muy cerca - ACTIVANDO GAME OVER");
                         this.triggerGameOver();
                         break;  // Salir del loop
                     }
@@ -209,12 +212,16 @@ class GameController {
      * 4. Liberar el cursor del pointer lock
      */
     triggerGameOver() {
+        console.log("🎮 GAME OVER ACTIVADO"); // Debug para verificar que se ejecuta
         this.gameOver = true;                                      // Bloquear loop de renderizado
         this.gameStateManager.setState(GameState.IDLE);            // Cambiar estado
         
         // Mostrar la pantalla de "Game Over"
         if (this.restartScreen) {
+            console.log("✓ Mostrando pantalla de reinicio");
             this.restartScreen.style.display = "flex";
+        } else {
+            console.error("✗ ERROR: restartScreen no encontrado. Verifica el HTML");
         }
         
         // Cambiar expresión a enojada

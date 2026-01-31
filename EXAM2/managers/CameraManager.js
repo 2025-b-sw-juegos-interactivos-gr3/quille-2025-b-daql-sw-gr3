@@ -12,7 +12,7 @@ class CameraManager {
     }
 
     createCamera() {
-        this.camera = new BABYLON.UniversalCamera("DoomCam", new BABYLON.Vector3(0, 3, -25), this.scene);
+        this.camera = new BABYLON.UniversalCamera("HellCam", new BABYLON.Vector3(0, 3, -25), this.scene);
         this.camera.setTarget(new BABYLON.Vector3(0, 3, 0));
         this.camera.attachControl(this.canvas, true);
         this.camera.applyGravity = true;

@@ -6,7 +6,7 @@ class UIManager {
             return UIManager.instance;
         }
         this.weaponDiv = document.getElementById("weapon");
-        this.faceDiv = document.getElementById("doom-face");
+        this.faceDiv = document.getElementById("neon-face");
         this.faceAnimationInterval = null;
         
         this.faces = {

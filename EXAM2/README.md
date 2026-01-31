@@ -1,4 +1,4 @@
-# DOOM - Vertical Slice Demo
+# HELL-BOUND - Vertical Slice Demo
 
 ## Patrones de Diseño Utilizados
 
@@ -33,7 +33,7 @@ El `GameStateManager` permite que otros sistemas se suscriban a cambios de estad
 ## Arquitectura del Proyecto
 
 ```
-DOOMEX/
+HELLBOUND/
 ├── managers/
 │   ├── SceneManager.js           (Gestión de escena)
 │   ├── CameraManager.js          (Control de cámara)
@@ -58,11 +58,11 @@ DOOMEX/
 │   ├── door.jpg
 │   ├── imp.png
 │   ├── gun_strip.png
-│   ├── new_hud.webp
+│   ├── new_hud.webp 
 │   └── face.png
 │
 ├── mp3/                           (Recursos de audio)
-│   ├── doom1.mp3                 (Música de fondo)
+│   ├── bgm1.mp3                  (Música de fondo)
 │   └── gupP.mp3                  (Sonido de disparo)
 │
 ├── index.html                     (Punto de entrada HTML)

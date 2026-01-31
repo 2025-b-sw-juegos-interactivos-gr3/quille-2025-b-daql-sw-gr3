@@ -13,15 +13,27 @@ class GameController {
         this.backgroundMusic = null;
         this.bulletsLeft = 5;
         this.gunSound = null;
+        this.gameOver = false;
+        this.restartScreen = document.getElementById("restart-screen");
+        this.restartButton = document.getElementById("restart-button");
         
         this.setupInput();
         this.setupRenderLoop();
         this.uiManager.startFaceAnimation();
         this.setupBackgroundMusic();
+        this.setupRestartUI();
     }
 
     setupInput() {
         this.inputManager.registerShootHandler(() => this.handleShoot());
+    }
+
+    setupRestartUI() {
+        if (this.restartButton) {
+            this.restartButton.addEventListener("click", () => {
+                window.location.reload();
+            });
+        }
     }
 
     handleShoot() {
@@ -78,16 +90,41 @@ class GameController {
 
     setupRenderLoop() {
         this.scene.registerBeforeRender(() => {
+            if (this.gameOver) {
+                return;
+            }
             const cameraPos = this.camera.position;
             this.enemyManager.updateEnemies(cameraPos);
+
+            const enemies = this.enemyManager.getEnemies();
+            for (const enemy of enemies) {
+                if (enemy) {
+                    const distance = BABYLON.Vector3.Distance(enemy.position, cameraPos);
+                    if (distance < 4.5) {
+                        this.triggerGameOver();
+                        break;
+                    }
+                }
+            }
         });
+    }
+
+    triggerGameOver() {
+        this.gameOver = true;
+        this.gameStateManager.setState(GameState.IDLE);
+        if (this.restartScreen) {
+            this.restartScreen.style.display = "flex";
+        }
+        this.uiManager.setFace("angry");
+        this.uiManager.stopFaceAnimation();
+        document.exitPointerLock?.();
     }
 
     setupBackgroundMusic() {
         // Crear elemento de audio HTML5
         this.backgroundMusic = new Audio();
-        this.backgroundMusic.src = "mp3/doom1.mp3";
-        this.backgroundMusic.volume = 0.05;
+        this.backgroundMusic.src = "mp3/bgm1.mp3";
+        this.backgroundMusic.volume = 0.15;
         this.backgroundMusic.loop = true;
         
         // Log para debugging

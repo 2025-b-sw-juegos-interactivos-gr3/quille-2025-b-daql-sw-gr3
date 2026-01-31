@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>DOOM: Vertical Slice Exam</title>
+    <title>HELL-BOUND: Vertical Slice Exam</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <style>
         /* CONFIGURACIÓN BÁSICA */
@@ -65,7 +65,7 @@
         }
 
         /* --- LA CARA ANIMADA --- */
-        #doom-face {
+        #neon-face {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -74,7 +74,7 @@
             height: 14vh; 
             background-image: url('texturas/face.png'); 
             background-repeat: no-repeat;
-            background-size: 200% 200%; 
+            background-size: 180% 100%; 
             background-position: 0% 0%; 
             image-rendering: pixelated;
             background-color: #000000; 
@@ -165,7 +165,7 @@
 </head>
 <body>
     <div id="demo-screen">
-        <h1>DOOM</h1>
+        <h1>HELL-BOUND</h1>
         <p>Bienvenido a la DEMO</p>
         <p>Por favor presiona PLAY para iniciar</p>
         <button id="play-button">PLAY</button>
@@ -174,7 +174,7 @@
     <div id="weapon"></div>
     
     <div id="hud-container">
-        <div id="doom-face"></div>
+        <div id="neon-face"></div>
     </div>
 
     <canvas id="renderCanvas"></canvas>

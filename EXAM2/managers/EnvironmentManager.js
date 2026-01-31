@@ -23,7 +23,7 @@ class EnvironmentManager {
         this.meshes.ceiling = ceiling;
 
         const largoPasillo = 60; 
-        const anchoPasillo = 12;
+        const anchoPasillo = 25;
         const altura = 7;
 
         const wallLeft = BABYLON.MeshBuilder.CreateBox("wallLeft", {width: 1, height: altura, depth: largoPasillo}, this.scene);
@@ -47,6 +47,10 @@ class EnvironmentManager {
         gate.position = new BABYLON.Vector3(0, altura / 2, zPos);
         gate.checkCollisions = true;
         gate.material = materials.gate;
+        // Invertir la puerta del fondo para que esté al derecho
+        if (zPos > 0) {
+            gate.rotation.y = Math.PI;
+        }
     }
 
     getMesh(name) {

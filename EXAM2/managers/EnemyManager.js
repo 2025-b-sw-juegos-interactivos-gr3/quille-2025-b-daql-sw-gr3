@@ -12,14 +12,14 @@ class EnemyManager {
     }
 
     createSpriteManager() {
-        this.spriteManager = new BABYLON.SpriteManager("impManager", "texturas/imp.png", 10, {width: 200, height: 300}, this.scene);
+        this.spriteManager = new BABYLON.SpriteManager("impManager", "texturas/imp.png", 10, {width: 600, height: 800}, this.scene);
         this.spriteManager.isPickable = true;
     }
 
     createEnemy(x, z) {
         const imp = new BABYLON.Sprite("imp", this.spriteManager);
         imp.position = new BABYLON.Vector3(x, 1.5, z);
-        imp.size = 3.5; 
+        imp.size = 6; 
         imp.isPickable = true;
         this.enemies.push(imp);
         return imp;

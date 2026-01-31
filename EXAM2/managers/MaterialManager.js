@@ -27,7 +27,9 @@ class MaterialManager {
         this.materials.ceiling = ceilMat;
 
         const gateMat = new BABYLON.StandardMaterial("gateMat", this.scene);
-        gateMat.diffuseTexture = new BABYLON.Texture("texturas/door.jpg", this.scene);
+        gateMat.diffuseTexture = new BABYLON.Texture("texturas/door.png", this.scene);
+        gateMat.diffuseTexture.vScale = -1; 
+        gateMat.diffuseTexture.vOffset = 1; 
         gateMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
         this.materials.gate = gateMat;
         
